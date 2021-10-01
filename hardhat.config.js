@@ -23,5 +23,9 @@ module.exports = {
         count: 40,
       },
     },
+    rinkeby: {
+      url: process.env.RINKEBY_URL,
+      accounts: [process.env.RINKEBY_PK_1]
+    },
   },
 };
