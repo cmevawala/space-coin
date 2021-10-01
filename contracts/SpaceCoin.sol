@@ -15,18 +15,19 @@ enum Phase {
 
 contract SpaceCoin is ERC20, Ownable {
 
-    bool private _transferTax = false;
     bool private _pause = false;
     
-    uint private _phaseLimit = 1500 ether;
-    uint private _contributionLimit = 300 ether;
+    uint private PHASE_LIMIT = 1500 ether;
+    uint private CONTRIBUTION_LIMIT = 300 ether;
 
     Phase private _phase = Phase.Seed;
 
     mapping(address => bool) private _whiteListedAddress;
     mapping(address => uint) private _contributorToAmount;
 
-    // Emit events at last
+    event AddedToWhiteList(string message, address sender);
+    event ContributionSuccess(string message, uint amount);
+    event TokenTransfered(string message);
 
     modifier isWhitelisted() {
         if (_phase == Phase.Seed) {
@@ -37,13 +38,12 @@ contract SpaceCoin is ERC20, Ownable {
 
     modifier underLimit() {
         if (_phase != Phase.Open) {
-            require(_contributorToAmount[msg.sender] + msg.value <= _contributionLimit, 'Error: More than contribution limit');
+            require(_contributorToAmount[msg.sender] + msg.value <= CONTRIBUTION_LIMIT, 'Error: More than contribution limit');
         }
         
-        require(getBalance() <= _phaseLimit, 'Error: Phase limit over');
+        require(getBalance() <= PHASE_LIMIT, 'Error: Phase limit over');
         _;
     }
-
 
     constructor(uint initialSupply) ERC20("SpaceCoin", "WSPC") {
         _mint(msg.sender, initialSupply);
@@ -58,45 +58,45 @@ contract SpaceCoin is ERC20, Ownable {
     }
 
     function getPhaseLimit() external view returns (uint) {
-        return _phaseLimit;
+        return PHASE_LIMIT;
     }
 
     function getContributionLimit() external view returns (uint) {
-        return _contributionLimit;
+        return CONTRIBUTION_LIMIT;
     }
 
     function setPhase(Phase phase) external onlyOwner {
         require(phase > _phase, 'Error: Only Forward Phase is allowed');
 
         _phase = phase;
-        _phaseLimit = 3000 ether;
-        _contributionLimit = 600 ether;
-    }
-
-    function chargeTax() external onlyOwner {
-        _transferTax = !_transferTax;
+        PHASE_LIMIT = 3000 ether;
+        CONTRIBUTION_LIMIT = 600 ether;
     }
 
     function addWhitelisted(address _address) external onlyOwner {
         if (_whiteListedAddress[_address] == false) {
             _whiteListedAddress[_address] = true;
             _contributorToAmount[_address] = 0;
+            emit AddedToWhiteList("Address Whitelisted", msg.sender);
         }
     }
 
     function contribute() public payable isWhitelisted underLimit {
         _contributorToAmount[msg.sender] += msg.value;
+        emit ContributionSuccess("Contribution Received", msg.value);
     }
 
     function tokenTransfer() public {
+        require(_phase == Phase.Open, 'Error: Cannot redeem in current Phase');
         require(_contributorToAmount[msg.sender] > 0, 'Error: Invalid address or have not contributed any amount');
-        
-        _approve(this.owner(), msg.sender, _contributorToAmount[msg.sender] * 5);
-        transferFrom(this.owner(), msg.sender, _contributorToAmount[msg.sender] * 5);
-    }
 
-    function getByAddress(address _address) external view returns (uint) {
-        return _contributorToAmount[_address];
+        uint contributedAmount = _contributorToAmount[msg.sender];
+        _contributorToAmount[msg.sender] = 0;
+        
+        _approve(this.owner(), msg.sender, contributedAmount * 5);
+        transferFrom(this.owner(), msg.sender, contributedAmount * 5);
+
+        emit TokenTransfered("Token has been transferred");
     }
 
 }

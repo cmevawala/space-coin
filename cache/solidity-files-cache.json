@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/Chitrang.Mevawala/Documents/optilistic/space-coin/contracts/SpaceCoin.sol": {
-      "lastModificationDate": 1633102393021,
-      "contentHash": "ed280ccf5d4a5d9fdfdf38e46123807a",
+      "lastModificationDate": 1633113100379,
+      "contentHash": "9feb37d7317d72eca6db73ae5ff43edc",
       "sourceName": "contracts/SpaceCoin.sol",
       "solcConfig": {
         "version": "0.8.7",
