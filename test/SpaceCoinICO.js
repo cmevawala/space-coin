@@ -1,20 +1,25 @@
 const { expect } = require('chai');
 const { formatEther, parseEther, parseUnits, formatUnits } = require('ethers/lib/utils');
 
-describe.only('SpaceCoinICO', function () {
+describe('SpaceCoinICO', function () {
   let SpaceCoinICOContract;
   let spaceCoinICO;
+  let TreasuryContract;
+  let treasury;
   let owner, w1;
-
+  
   beforeEach(async function () {
     // Get the ContractFactory and Signers here.
     [owner, w1] = await ethers.getSigners();
+
+    TreasuryContract = await ethers.getContractFactory('Treasury');
+    treasury = await TreasuryContract.deploy();
 
     SpaceCoinICOContract = await ethers.getContractFactory('SpaceCoinICO');
     spaceCoinICO = await SpaceCoinICOContract.deploy();
 
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
-    spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address);
+    spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
     spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
 
@@ -24,16 +29,16 @@ describe.only('SpaceCoinICO', function () {
     expect(await spaceCoinICO.owner()).to.equal(owner.address)
   });
 
-  it('try adding whitelist same address multiple times', async function () {
-    await spaceCoinICO.addWhitelisted(w1.address);
-
-    await expect(spaceCoinICO.addWhitelisted(w1.address)).to.be.revertedWith('Already Whitelisted');
-  });
-
   it('should be in a seed phase', async function () {
     expect(formatUnits(await spaceCoinICO.currentPhase())).to.equal("0.0");
     expect(formatUnits(await spaceCoinICO.getPhaseLimit())).to.equal("15000.0")
     expect(formatUnits(await spaceCoinICO.getContributionLimit())).to.equal("1500.0")
+  });
+
+  it('try adding same whitelisted address multiple times', async function () {
+    await spaceCoinICO.addWhitelisted(w1.address);
+
+    await expect(spaceCoinICO.addWhitelisted(w1.address)).to.be.revertedWith('Already Whitelisted');
   });
 
   it('should pause/unpause the offerings when pause is called by owner', async function () {
@@ -48,31 +53,14 @@ describe.only('SpaceCoinICO', function () {
     await spaceCoinICO.pause();
     await expect(spaceCoinICO.setGeneralPhase()).to.be.revertedWith('Pausable: paused');
   });
-
-  it('should verify remaining capacity after contritbution', async function () {
-    await spaceCoinICO.addWhitelisted(w1.address);
-
-    let overrides = { value: parseEther('300') };
-    await spaceCoinICO.connect(w1).contribute(overrides);
-
-    expect(formatEther(await spaceCoinICO.phaseRemaingCapacity())).to.equal('14700.0');
-
-    await spaceCoinICO.setGeneralPhase();
-    await spaceCoinICO.connect(w1).contribute(overrides);
-
-    expect(formatEther(await spaceCoinICO.phaseRemaingCapacity())).to.equal('29400.0');
-
-    await spaceCoinICO.setOpenPhase();
-    await spaceCoinICO.connect(w1).contribute(overrides);
-
-    expect(formatEther(await spaceCoinICO.phaseRemaingCapacity())).to.equal('29100.0');
-  });
 });
 
 
-describe.only('SpaceCoinICO - Contribution - Seed Phase', function () {
+describe('SpaceCoinICO - Contribution - Seed Phase', function () {
   let SpaceCoinICOContract;
   let spaceCoinICO;
+  let TreasuryContract;
+  let treasury;
   let owner;
   let w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12;
 
@@ -80,11 +68,14 @@ describe.only('SpaceCoinICO - Contribution - Seed Phase', function () {
     // Get the ContractFactory and Signers here.
     [owner, w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12] = await ethers.getSigners();
 
+    TreasuryContract = await ethers.getContractFactory('Treasury');
+    treasury = await TreasuryContract.deploy();
+
     SpaceCoinICOContract = await ethers.getContractFactory('SpaceCoinICO');
     spaceCoinICO = await SpaceCoinICOContract.deploy();
 
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
-    spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address);
+    spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
     spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
   });
@@ -145,13 +136,34 @@ describe.only('SpaceCoinICO - Contribution - Seed Phase', function () {
     await expect(spaceCoinICO.connect(w12).contribute(overrides)).to.be.revertedWith('Error: Phase limit over');
     expect(formatEther(await spaceCoinICO.getBalance())).to.equal('14998.0');
   });
+
+  it('should verify remaining capacity after contritbution', async function () {
+    await spaceCoinICO.addWhitelisted(w1.address);
+
+    let overrides = { value: parseEther('300') };
+    await spaceCoinICO.connect(w1).contribute(overrides);
+
+    expect(formatEther(await spaceCoinICO.phaseRemaingCapacity())).to.equal('14700.0');
+
+    await spaceCoinICO.setGeneralPhase();
+    await spaceCoinICO.connect(w1).contribute(overrides);
+
+    expect(formatEther(await spaceCoinICO.phaseRemaingCapacity())).to.equal('29400.0');
+
+    await spaceCoinICO.setOpenPhase();
+    await spaceCoinICO.connect(w1).contribute(overrides);
+
+    expect(formatEther(await spaceCoinICO.phaseRemaingCapacity())).to.equal('29100.0');
+  });
   
 });
 
 
-describe.only('SpaceCoinICO - Change Phase', function () {
+describe('SpaceCoinICO - Change Phase', function () {
   let SpaceCoinICOContract;
   let spaceCoinICO;
+  let TreasuryContract;
+  let treasury;
   let owner;
   let w1, w2, w3, w4;
 
@@ -159,11 +171,14 @@ describe.only('SpaceCoinICO - Change Phase', function () {
     // Get the ContractFactory and Signers here.
     [owner, w1, w2, w3, w4] = await ethers.getSigners();
 
+    TreasuryContract = await ethers.getContractFactory('Treasury');
+    treasury = await TreasuryContract.deploy();
+
     SpaceCoinICOContract = await ethers.getContractFactory('SpaceCoinICO');
     spaceCoinICO = await SpaceCoinICOContract.deploy();
 
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
-    spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address);
+    spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
     spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
 
@@ -195,9 +210,11 @@ describe.only('SpaceCoinICO - Change Phase', function () {
 });
 
 
-describe.only('SpaceCoinICO - Contribution - General Phase', function () {
+describe('SpaceCoinICO - Contribution - General Phase', function () {
   let SpaceCoinICOContract;
   let spaceCoinICO;
+  let TreasuryContract;
+  let treasury;
   let owner;
   let w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16;
 
@@ -205,11 +222,14 @@ describe.only('SpaceCoinICO - Contribution - General Phase', function () {
     // Get the ContractFactory and Signers here.
     [owner, w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16] = await ethers.getSigners();
 
+    TreasuryContract = await ethers.getContractFactory('Treasury');
+    treasury = await TreasuryContract.deploy();
+
     SpaceCoinICOContract = await ethers.getContractFactory('SpaceCoinICO');
     spaceCoinICO = await SpaceCoinICOContract.deploy();
 
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
-    spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address);
+    spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
     spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
   });
@@ -305,6 +325,10 @@ describe.only('SpaceCoinICO - Contribution - Open Phase', function () {
 
   let SpaceCoinICOContract;
   let spaceCoinICO;
+  let SpaceCoinContract;
+  let spaceCoin;
+  let TreasuryContract;
+  let treasury;
   let owner;
   let w1, w2, w3;
 
@@ -312,11 +336,14 @@ describe.only('SpaceCoinICO - Contribution - Open Phase', function () {
     // Get the ContractFactory and Signers here.
     [owner, w1, w2, w3] = await ethers.getSigners();
 
+    TreasuryContract = await ethers.getContractFactory('Treasury');
+    treasury = await TreasuryContract.deploy();
+
     SpaceCoinICOContract = await ethers.getContractFactory('SpaceCoinICO');
     spaceCoinICO = await SpaceCoinICOContract.deploy();
 
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
-    spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address);
+    spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
     spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
   });
@@ -339,6 +366,34 @@ describe.only('SpaceCoinICO - Contribution - Open Phase', function () {
     
     expect(formatEther(await spaceCoin.balanceOf(w1.address))).to.equal('7500.0');
     expect(formatEther(await spaceCoin.balanceOf(w2.address))).to.equal('4999.95');
+  });
+
+  it('should allow to transfer tokens', async function () {
+    await spaceCoinICO.addWhitelisted(w1.address);
+
+    let overrides = { value: parseEther('1500') };
+    await spaceCoinICO.connect(w1).contribute(overrides)
+    
+    await spaceCoinICO.setGeneralPhase();
+    overrides = { value: parseEther('999.99') };
+    await spaceCoinICO.connect(w2).contribute(overrides)
+
+    expect(formatEther(await spaceCoinICO.getBalance())).to.equal('2499.99');
+    await spaceCoinICO.setOpenPhase();
+
+    await spaceCoinICO.connect(w1).redeem();
+    await spaceCoinICO.connect(w2).redeem();
+    
+    expect(formatEther(await spaceCoin.balanceOf(w1.address))).to.equal('7500.0');
+    expect(formatEther(await spaceCoin.balanceOf(w2.address))).to.equal('4999.95');
+
+    await spaceCoin.tokenTrasfer(w1.address, treasury.address, parseUnits('100'));
+    expect(formatEther(await spaceCoin.balanceOf(w1.address))).to.equal('7400.0');
+
+    await spaceCoin.tokenTrasfer(w2.address, treasury.address, parseUnits('100'));
+    expect(formatEther(await spaceCoin.balanceOf(w2.address))).to.equal('4899.95');
+
+    expect(formatEther(await spaceCoin.balanceOf(treasury.address))).to.equal('200.0');
   });
 
   it('should not allow redeem tokens in other than open phase', async function () {
