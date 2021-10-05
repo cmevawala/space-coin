@@ -2,7 +2,7 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/Chitrang.Mevawala/Documents/optilistic/space-coin/contracts/SpaceCoin.sol": {
-      "lastModificationDate": 1633421107427,
+      "lastModificationDate": 1633457582072,
       "contentHash": "e38444e6af51bf6f94eff680eaadc689",
       "sourceName": "contracts/SpaceCoin.sol",
       "solcConfig": {
@@ -149,8 +149,8 @@
       ]
     },
     "/Users/Chitrang.Mevawala/Documents/optilistic/space-coin/contracts/Treasury.sol": {
-      "lastModificationDate": 1633164593396,
-      "contentHash": "14efe4ae274c656e6c3c1fca9d69f311",
+      "lastModificationDate": 1633458967906,
+      "contentHash": "abda0acabfdaea53f97da50669e79900",
       "sourceName": "contracts/Treasury.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -176,7 +176,8 @@
       },
       "imports": [
         "hardhat/console.sol",
-        "@openzeppelin/contracts/access/Ownable.sol"
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "./SpaceCoinICO.sol"
       ],
       "versionPragmas": [
         "^0.8.7"
@@ -290,8 +291,8 @@
       ]
     },
     "/Users/Chitrang.Mevawala/Documents/optilistic/space-coin/contracts/SpaceCoinICO.sol": {
-      "lastModificationDate": 1633452062820,
-      "contentHash": "6a89da4e9bb96eab68640aacfa29e66a",
+      "lastModificationDate": 1633459002936,
+      "contentHash": "fe5073ae0d156569f3091791f1a6e921",
       "sourceName": "contracts/SpaceCoinICO.sol",
       "solcConfig": {
         "version": "0.8.7",

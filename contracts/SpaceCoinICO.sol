@@ -154,7 +154,7 @@ contract SpaceCoinICO is Ownable, Pausable {
         emit TokenTransfered("Token has been transferred");
     }
 
-    function withdraw() external {
+    function withdraw() external payable {
         require(msg.sender == _treasury, "UNAUTHORIZED");
         (bool success, ) = _treasury.call{ value: address(this).balance }("");
         require(success, 'WITHDRAW_FAILED');

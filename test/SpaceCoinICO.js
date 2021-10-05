@@ -346,6 +346,7 @@ describe('SpaceCoinICO - Contribution - Open Phase', function () {
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
     spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
+    treasury.setSpaceCoinICOAddress(spaceCoinICO.address);
   });
 
   it('should allow redeem tokens', async function () {
@@ -396,14 +397,31 @@ describe('SpaceCoinICO - Contribution - Open Phase', function () {
     expect(formatEther(await spaceCoin.balanceOf(treasury.address))).to.equal('200.0');
   });
 
-  it('should not allow redeem tokens in other than open phase', async function () {
+  it('should allow the treasury to withdraw the tokens', async function () {
     await spaceCoinICO.addWhitelisted(w1.address);
 
     let overrides = { value: parseEther('1500') };
     await spaceCoinICO.connect(w1).contribute(overrides)
+    
+    await spaceCoinICO.setGeneralPhase();
+    overrides = { value: parseEther('999.99') };
+    await spaceCoinICO.connect(w2).contribute(overrides)
 
-    await expect(spaceCoinICO.connect(w1).redeem()).to.be.revertedWith('Error: Cannot redeem in current Phase');
+    expect(formatEther(await spaceCoinICO.getBalance())).to.equal('2499.99');
+    await spaceCoinICO.setOpenPhase();
+
+    await treasury.withdrawFromICO();
+    expect(formatEther(await treasury.getBalance())).to.equal('2499.99');
   });
+
+  // it('should not allow redeem tokens in other than open phase', async function () {
+  //   await spaceCoinICO.addWhitelisted(w1.address);
+
+  //   let overrides = { value: parseEther('1500') };
+  //   await spaceCoinICO.connect(w1).contribute(overrides)
+
+  //   await expect(spaceCoinICO.connect(w1).redeem()).to.be.revertedWith('Error: Cannot redeem in current Phase');
+  // });
 
   it('should not allow to redeem token by a valid address who have not contributed any amount', async function () {
     await spaceCoinICO.addWhitelisted(w1.address);
