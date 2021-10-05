@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const { formatEther } = require('ethers/lib/utils');
 
-describe.only('SpaceCoin', function () {
+describe('SpaceCoin', function () {
   let SpaceCoinContract;
   let SpaceCoinICOContract;
   let spaceCoin;
@@ -17,7 +17,7 @@ describe.only('SpaceCoin', function () {
     treasury = await TreasuryContract.deploy();
 
     SpaceCoinICOContract = await ethers.getContractFactory('SpaceCoinICO');
-    spaceCoinICO = await SpaceCoinICOContract.deploy();
+    spaceCoinICO = await SpaceCoinICOContract.deploy(treasury.address);
 
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);

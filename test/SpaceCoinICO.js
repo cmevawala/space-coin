@@ -16,7 +16,7 @@ describe('SpaceCoinICO', function () {
     treasury = await TreasuryContract.deploy();
 
     SpaceCoinICOContract = await ethers.getContractFactory('SpaceCoinICO');
-    spaceCoinICO = await SpaceCoinICOContract.deploy();
+    spaceCoinICO = await SpaceCoinICOContract.deploy(treasury.address);
 
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
@@ -72,7 +72,7 @@ describe('SpaceCoinICO - Contribution - Seed Phase', function () {
     treasury = await TreasuryContract.deploy();
 
     SpaceCoinICOContract = await ethers.getContractFactory('SpaceCoinICO');
-    spaceCoinICO = await SpaceCoinICOContract.deploy();
+    spaceCoinICO = await SpaceCoinICOContract.deploy(treasury.address);
 
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
@@ -175,7 +175,7 @@ describe('SpaceCoinICO - Change Phase', function () {
     treasury = await TreasuryContract.deploy();
 
     SpaceCoinICOContract = await ethers.getContractFactory('SpaceCoinICO');
-    spaceCoinICO = await SpaceCoinICOContract.deploy();
+    spaceCoinICO = await SpaceCoinICOContract.deploy(treasury.address);
 
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
@@ -226,7 +226,7 @@ describe('SpaceCoinICO - Contribution - General Phase', function () {
     treasury = await TreasuryContract.deploy();
 
     SpaceCoinICOContract = await ethers.getContractFactory('SpaceCoinICO');
-    spaceCoinICO = await SpaceCoinICOContract.deploy();
+    spaceCoinICO = await SpaceCoinICOContract.deploy(treasury.address);
 
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
@@ -321,7 +321,7 @@ describe('SpaceCoinICO - Contribution - General Phase', function () {
 });
 
 
-describe.only('SpaceCoinICO - Contribution - Open Phase', function () {
+describe('SpaceCoinICO - Contribution - Open Phase', function () {
 
   let SpaceCoinICOContract;
   let spaceCoinICO;
@@ -340,7 +340,7 @@ describe.only('SpaceCoinICO - Contribution - Open Phase', function () {
     treasury = await TreasuryContract.deploy();
 
     SpaceCoinICOContract = await ethers.getContractFactory('SpaceCoinICO');
-    spaceCoinICO = await SpaceCoinICOContract.deploy();
+    spaceCoinICO = await SpaceCoinICOContract.deploy(treasury.address);
 
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);

@@ -22,20 +22,21 @@ contract SpaceCoinICO is Ownable, Pausable {
         What is address(0) 
     */
 
+    event AddedToWhiteList(string message, address sender);
+    event ContributionSuccess(string message, uint amount);
+    event TokenTransfered(string message);
+
     uint private EXCHANGE_RATE = 5;
     uint private PHASE_LIMIT = 15000 ether;
     uint private CONTRIBUTION_LIMIT = 1500 ether;
 
-    SpaceCoin spaceCoin;
-    Phase private _phase;
-
     uint private totalContributed;
     mapping(address => bool) private _whiteListedAddress;
     mapping(address => uint) private _contributorToAmount;
+    address private _treasury;
 
-    event AddedToWhiteList(string message, address sender);
-    event ContributionSuccess(string message, uint amount);
-    event TokenTransfered(string message);
+    SpaceCoin private _spaceCoin;
+    Phase private _phase;
 
     modifier isWhitelisted() {
         if (_phase == Phase.Seed) {
@@ -54,6 +55,10 @@ contract SpaceCoinICO is Ownable, Pausable {
         _;
     }
 
+    constructor(address treasury) {
+        _treasury = treasury;
+    }
+
     // --------------------------------------------------------
 
     function getBalance() public view returns (uint) {
@@ -61,7 +66,7 @@ contract SpaceCoinICO is Ownable, Pausable {
     }
 
     // function balanceOf(address _address) public view returns (uint) {
-    //     return spaceCoin.balanceOf(_address);
+    //     return _spaceCoin.balanceOf(_address);
     // }
 
     function currentPhase() external view returns (Phase) {
@@ -78,9 +83,9 @@ contract SpaceCoinICO is Ownable, Pausable {
         return CONTRIBUTION_LIMIT;
     }
 
-    function setSpaceCoinAddress(SpaceCoin _spaceCoin) external {
+    function setSpaceCoinAddress(SpaceCoin spaceCoin) external {
         // Set Address only once
-        spaceCoin = _spaceCoin;
+        _spaceCoin = spaceCoin;
     }
 
     function setGeneralPhase() external onlyOwner whenNotPaused {
@@ -120,7 +125,7 @@ contract SpaceCoinICO is Ownable, Pausable {
         if (_phase != Phase.Open) {
             return PHASE_LIMIT - totalContributed; // 1500 WEI - 300 WEI
         } else {
-            return (spaceCoin.balanceOf(address(this)) / EXCHANGE_RATE);
+            return (_spaceCoin.balanceOf(address(this)) / EXCHANGE_RATE);
         }
     }
 
@@ -144,9 +149,15 @@ contract SpaceCoinICO is Ownable, Pausable {
 
         // _approve(this.owner(), msg.sender, contributedAmount);
         // transferFrom(this.owner(), msg.sender, contributedAmount);
-        spaceCoin.transfer(msg.sender, totalCoins);
+        _spaceCoin.transfer(msg.sender, totalCoins);
 
         emit TokenTransfered("Token has been transferred");
+    }
+
+    function withdraw() external {
+        require(msg.sender == _treasury, "UNAUTHORIZED");
+        (bool success, ) = _treasury.call{ value: address(this).balance }("");
+        require(success, 'WITHDRAW_FAILED');
     }
 
 }
