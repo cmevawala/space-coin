@@ -2,16 +2,22 @@ const { expect } = require('chai');
 const { formatEther } = require('ethers/lib/utils');
 
 describe('SpaceCoin', function () {
-  let SpaceCoinContract;
-  let SpaceCoinICOContract;
-  let spaceCoin;
-  let spaceCoinICO;
+  
+  let WETHContract;
+  let weth;
   let TreasuryContract;
   let treasury;
+  let SpaceCoinICOContract;
+  let spaceCoinICO;
+  let SpaceCoinContract;
+  let spaceCoin;
 
   beforeEach(async function () {
     // Get the ContractFactory and Signers here.
     [owner, w1] = await ethers.getSigners();
+
+    WETHContract = await ethers.getContractFactory('WETH');
+    weth = await WETHContract.deploy();
 
     TreasuryContract = await ethers.getContractFactory('Treasury');
     treasury = await TreasuryContract.deploy();
@@ -22,11 +28,13 @@ describe('SpaceCoin', function () {
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
+    spaceCoinICO.setWETHAddress(weth.address);
+
     // expect(formatUnits(await spaceCoinICO.getBalance())).to.equal("0.0");
     // expect(formatUnits(await w1.getBalance())).to.equal("10000.0");
   });
 
-  it('should have name `SpaceCoinICO`', async function () {
+  it('should have name `SpaceCoin`', async function () {
     expect(await spaceCoin.name()).to.equal("SpaceCoin")
   });
 
@@ -35,7 +43,8 @@ describe('SpaceCoin', function () {
   });
 
   it('should have total supply of 150,000 coins to raise 30,000 ETH', async function () {
-    expect(formatEther(await spaceCoin.totalSupply())).to.equal('150000.0');
+    // expect(formatEther(await spaceCoin.totalSupply())).to.equal('150000.0');
+    expect(formatEther(await spaceCoin.totalSupply())).to.equal('300000.0');
   });
 
   it('should charge tax', async function () {

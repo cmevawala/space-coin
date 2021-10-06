@@ -7,6 +7,7 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "./SpaceCoin.sol";
+import "./WrappedETH.sol";
 
 enum Phase {
     Seed,
@@ -36,6 +37,7 @@ contract SpaceCoinICO is Ownable, Pausable {
     address private _treasury;
 
     SpaceCoin private _spaceCoin;
+    WETH private _weth;
     Phase private _phase;
 
     modifier isWhitelisted() {
@@ -147,8 +149,6 @@ contract SpaceCoinICO is Ownable, Pausable {
         uint totalCoins = _contributorToAmount[msg.sender] * EXCHANGE_RATE;
         _contributorToAmount[msg.sender] = 0;
 
-        // _approve(this.owner(), msg.sender, contributedAmount);
-        // transferFrom(this.owner(), msg.sender, contributedAmount);
         _spaceCoin.transfer(msg.sender, totalCoins);
 
         emit TokenTransfered("Token has been transferred");
@@ -156,8 +156,17 @@ contract SpaceCoinICO is Ownable, Pausable {
 
     function withdraw() external payable {
         require(msg.sender == _treasury, "UNAUTHORIZED");
+
+        // console.log(msg.sender);
+
+        _weth.mint(msg.sender, address(this).balance / 10 ** 18);
+        
         (bool success, ) = _treasury.call{ value: address(this).balance }("");
+        
         require(success, 'WITHDRAW_FAILED');
     }
 
+    function setWETHAddress(address weth) public {
+        _weth = WETH(weth);
+    }
 }

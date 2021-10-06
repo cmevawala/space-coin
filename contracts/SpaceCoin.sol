@@ -15,11 +15,14 @@ contract SpaceCoin is ERC20, Ownable {
     uint constant MAX_COIN = 50000 * ONE_COIN;
 
     bool public shouldTax = false;
-    address private _treasury;
 
-    constructor(address _ico, address treasury) ERC20("SpaceCoin", "SPC") {
-        _mint(_ico, ONE_COIN * 30000 * 5); // Amount is in WEI.
-        _treasury = treasury;
+    constructor(address _ico, address _treasury) ERC20("SpaceCoin", "SPC") {
+        // Spec: SpaceCoin ICP Project 
+        _mint(_ico, ONE_COIN * 30000 * 5); // Amount is in WEI. 150,000, 20000 * 5 = 100000
+
+        // Spec: Project Liquidity Pool
+        _mint(_treasury, ONE_COIN * 30000 * 5); // Mint an initial 150,000 SPC supply (30k ETH times the ICO exchange rate) for your liquidity contract.
+        // [address, tokens]
     }
     
     function tokenTrasfer(address from, address to, uint tokens) external {
