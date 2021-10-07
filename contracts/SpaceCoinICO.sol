@@ -6,8 +6,10 @@ pragma solidity ^0.8.7;
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
+
 import "./SpaceCoin.sol";
 import "./WrappedETH.sol";
+import "./SpacePool.sol";
 
 enum Phase {
     Seed,
@@ -37,6 +39,7 @@ contract SpaceCoinICO is Ownable, Pausable {
     address private _treasury;
 
     SpaceCoin private _spaceCoin;
+    SpacePool private _spacePool;
     WETH private _weth;
     Phase private _phase;
 
@@ -88,6 +91,11 @@ contract SpaceCoinICO is Ownable, Pausable {
     function setSpaceCoinAddress(SpaceCoin spaceCoin) external {
         // Set Address only once
         _spaceCoin = spaceCoin;
+    }
+
+    function setSpacePoolAddress(SpacePool spacePool) external {
+        // Set Address only once
+        _spacePool = spacePool;
     }
 
     function setGeneralPhase() external onlyOwner whenNotPaused {
@@ -154,19 +162,27 @@ contract SpaceCoinICO is Ownable, Pausable {
         emit TokenTransfered("Token has been transferred");
     }
 
-    function withdraw() external payable {
-        require(msg.sender == _treasury, "UNAUTHORIZED");
-
-        // console.log(msg.sender);
-
-        _weth.mint(msg.sender, address(this).balance / 10 ** 18);
-        
-        (bool success, ) = _treasury.call{ value: address(this).balance }("");
-        
-        require(success, 'WITHDRAW_FAILED');
-    }
+    // function withdraw() external payable {
+    //     require(msg.sender == _treasury, "UNAUTHORIZED");
+    //     // _weth.mint(msg.sender, address(this).balance / 10 ** 18);
+    //     _spaceCoin.transfer(address(_spacePool), address(this).balance * 5);
+    //     // (bool successT,) = _treasury.call{ value: address(this).balance }("");
+    //     (bool success,) = address(_spacePool).call{ value: address(this).balance }("");
+    //     require(success, 'WITHDRAW_FAILED');
+    // }
 
     function setWETHAddress(address weth) public {
         _weth = WETH(weth);
     }
+
+    function withdraw() external payable onlyOwner {
+
+        _spaceCoin.mint(address(_spacePool), (address(this).balance / 10 ** 18) * 5);
+        
+        _weth.mint(address(_spacePool), address(this).balance / 10 ** 18);
+        (bool success, ) = address(_spacePool).call{ value: address(this).balance }("");
+        
+        require(success, 'WITHDRAW_FAILED');
+    }
+
 }

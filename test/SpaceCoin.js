@@ -28,7 +28,7 @@ describe('SpaceCoin', function () {
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
-    spaceCoinICO.setWETHAddress(weth.address);
+    // spaceCoinICO.setWETHAddress(weth.address);
 
     // expect(formatUnits(await spaceCoinICO.getBalance())).to.equal("0.0");
     // expect(formatUnits(await w1.getBalance())).to.equal("10000.0");
@@ -43,8 +43,7 @@ describe('SpaceCoin', function () {
   });
 
   it('should have total supply of 150,000 coins to raise 30,000 ETH', async function () {
-    // expect(formatEther(await spaceCoin.totalSupply())).to.equal('150000.0');
-    expect(formatEther(await spaceCoin.totalSupply())).to.equal('300000.0');
+    expect(formatEther(await spaceCoin.totalSupply())).to.equal('150000.0');
   });
 
   it('should charge tax', async function () {

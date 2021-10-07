@@ -26,19 +26,19 @@ contract Treasury is Ownable {
         _ico = SpaceCoinICO(ico);
     }
 
-    function setSpacePoolAddress(address spacePool) public {
-        _spacePool = SpacePool(spacePool);
-    }
+    // function setSpacePoolAddress(address spacePool) public {
+    //     _spacePool = SpacePool(spacePool);
+    // }
 
-    function setWETHAddress(address weth) public {
-        _weth = WETH(weth);
-    }
+    // function setWETHAddress(address weth) public {
+    //     _weth = WETH(weth);
+    // }
 
-    function withdrawFromICO() public payable {
-        _ico.withdraw();
-    }
+    // function withdrawFromICO() public payable {
+    //     _ico.withdraw();
+    // }
 
-    function transferWETH(address _to, uint amount) external onlyOwner {
-        _weth.transfer( _to, amount);
-    }
+    // function transferWETH(address _to, uint amount) external onlyOwner {
+    //     _weth.transfer(_to, amount);
+    // }
 }

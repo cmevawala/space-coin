@@ -28,7 +28,13 @@ contract SpacePool is Ownable {
     }
 
     constructor() {
+        // factory = msg.sender;
+    }
 
+    receive() external payable {}
+
+    function getBalance() public view returns (uint) {
+        return address(this).balance;
     }
 
     function getReserves() public view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast) {
@@ -37,8 +43,16 @@ contract SpacePool is Ownable {
         _blockTimestampLast = blockTimestampLast;
     }
 
-    function mint() external lock {
+    // called once by the factory at time of deployment
+    function initialize(address _token0, address _token1) external {
+        // require(msg.sender == factory, 'UniswapV2: FORBIDDEN'); // sufficient check
+        token0 = _token0;
+        token1 = _token1;
     }
+
+    // function mint(address to) external lock returns (uint liquidity) {
+    //     (uint112 _reserve0, uint112 _reserve1,) = getReserves(); // gas savings
+    // }
 
     function burn() external lock {
     }

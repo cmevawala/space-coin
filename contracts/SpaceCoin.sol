@@ -21,8 +21,12 @@ contract SpaceCoin is ERC20, Ownable {
         _mint(_ico, ONE_COIN * 30000 * 5); // Amount is in WEI. 150,000, 20000 * 5 = 100000
 
         // Spec: Project Liquidity Pool
-        _mint(_treasury, ONE_COIN * 30000 * 5); // Mint an initial 150,000 SPC supply (30k ETH times the ICO exchange rate) for your liquidity contract.
+        // _mint(_treasury, ONE_COIN * 30000 * 5); // Mint an initial 150,000 SPC supply (30k ETH times the ICO exchange rate) for your liquidity contract.
         // [address, tokens]
+    }
+
+    function mint(address to, uint amount) external {
+        _mint(to, ONE_COIN * amount);
     }
     
     function tokenTrasfer(address from, address to, uint tokens) external {
@@ -33,7 +37,6 @@ contract SpaceCoin is ERC20, Ownable {
             tokens = tokens - taxAmount;
 
             _transfer(from, to, tokens);
-
         }
 
         _transfer(from, to, tokens);

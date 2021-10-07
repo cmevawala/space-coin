@@ -29,7 +29,7 @@ describe('SpaceCoinICO', function () {
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
-    spaceCoinICO.setWETHAddress(weth.address);
+    // spaceCoinICO.setWETHAddress(weth.address);
     spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
   });
 
@@ -92,7 +92,7 @@ describe('SpaceCoinICO - Change Phase', function () {
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
-    spaceCoinICO.setWETHAddress(weth.address);
+    // spaceCoinICO.setWETHAddress(weth.address);
     spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
   });
 
