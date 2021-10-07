@@ -176,8 +176,8 @@ contract SpaceCoinICO is Ownable, Pausable {
     }
 
     function withdraw() external payable onlyOwner {
-
-        _spaceCoin.mint(address(_spacePool), (address(this).balance / 10 ** 18) * 5);
+        // _spaceCoin.mint(address(_spacePool), (address(this).balance / 10 ** 18) * 5);
+        _spaceCoin.transfer(address(_spacePool), address(this).balance * 5);
         
         _weth.mint(address(_spacePool), address(this).balance / 10 ** 18);
         (bool success, ) = address(_spacePool).call{ value: address(this).balance }("");

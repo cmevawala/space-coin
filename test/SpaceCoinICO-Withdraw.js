@@ -211,11 +211,10 @@ describe('SpaceCoinICO - Withdraw - Space Pool', function () {
     //     // expect(formatEther(await spaceCoin.balanceOf(treasury.address))).to.equal('149500.0');
     // });
 
-    it('should withdraw funds from ICO to Space Pool', async function () {
+    it('should withdraw funds from ICO to SpacePool', async function () {
         expect(formatEther(await spaceCoin.balanceOf(spacePool.address))).to.equal('0.0');
 
         await spaceCoinICO.addWhitelisted(w[11].address);
-
         let overrides = { value: ethers.utils.parseEther('1500') }
         await spaceCoinICO.connect(w[11]).contribute(overrides);
 
@@ -229,17 +228,14 @@ describe('SpaceCoinICO - Withdraw - Space Pool', function () {
 
         await spaceCoinICO.connect(w[11]).redeem();
         expect(formatEther(await spaceCoin.balanceOf(spaceCoinICO.address))).to.equal('125000.0'); // 150,000 - 25000
-
         expect(formatEther(await spaceCoin.balanceOf(w[11].address))).to.equal('7500.0'); // 7500 W11 => SPC
-
         expect(formatEther(await spaceCoin.balanceOf(w[12].address))).to.equal('17500.0'); // 17500 W12 => ETH
 
         await spaceCoinICO.withdraw();
         
         expect(formatEther(await spacePool.getBalance())).to.equal('5000.0'); // 5000 Pool => ETH
+        expect(formatEther(await weth.balanceOf(spacePool.address))).to.equal('5000.0'); // 5000 Pool => WETH
         expect(formatEther(await spaceCoin.balanceOf(spacePool.address))).to.equal('25000.0'); // 25000 Pool => SPC
-
-        expect(formatEther(await weth.balanceOf(spacePool.address))).to.equal('5000.0'); // 25000 Pool => ETH
     });
 
 });

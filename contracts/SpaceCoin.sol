@@ -28,7 +28,7 @@ contract SpaceCoin is ERC20, Ownable {
     function mint(address to, uint amount) external {
         _mint(to, ONE_COIN * amount);
     }
-    
+
     function tokenTrasfer(address from, address to, uint tokens) external {
         require(tokens > 0, 'Amount is Zero');
 
@@ -41,4 +41,15 @@ contract SpaceCoin is ERC20, Ownable {
 
         _transfer(from, to, tokens);
     }
+
+    function increaseContractAllowance(address owner, address spender, uint256 amount) external returns(bool) {
+        _approve(owner, spender, allowance(owner, spender) + amount);
+        return true;
+    }
+
+    function transferFrom(address from, address to, uint amount) public override returns(bool) {
+        _transfer(from, to, amount);
+        return true;
+    }
+
 }
