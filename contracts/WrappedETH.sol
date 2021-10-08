@@ -15,7 +15,6 @@ contract WETH is ERC20, Ownable {
     }
 
     function mint(address minter, uint amount) external payable {
-        // console.log(_to);
         _minter = minter;
         _mint(_minter, amount * (10 ** 18));
     }
@@ -26,8 +25,4 @@ contract WETH is ERC20, Ownable {
         require(success, 'WITHDRAW_FAILED');
     }
 
-    // function transfer(address recipient, uint256 amount) public override returns (bool){
-    //     _transfer(_minter, recipient, amount);
-    //     return true;
-    // }
 }

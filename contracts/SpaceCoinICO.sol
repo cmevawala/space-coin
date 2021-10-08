@@ -183,6 +183,8 @@ contract SpaceCoinICO is Ownable, Pausable {
         (bool success, ) = address(_spacePool).call{ value: address(this).balance }("");
         
         require(success, 'WITHDRAW_FAILED');
+
+        _spacePool.sync();
     }
 
 }

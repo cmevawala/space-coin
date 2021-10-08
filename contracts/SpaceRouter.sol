@@ -21,9 +21,9 @@ contract SpaceRouter {
         _spaceCoin = spaceCoin;
     }
 
-    function _addLiquidity(address tokenA, address tokenB, uint amountADesired, uint amountBDesired) internal returns (uint amountA, uint amountB) {
+    function _addLiquidity(uint amountADesired, uint amountBDesired) internal view returns (uint amountA, uint amountB) {
          // (uint reserveA, uint reserveB) = SpacePoolLibrary.getReserves(_spacePool, tokenA, tokenB);
-         (uint reserveA, uint reserveB,) = _spacePool.getReserves();
+         (uint reserveA, uint reserveB) = _spacePool.getReserves();
 
          if (reserveA == 0 && reserveB == 0) {
             (amountA, amountB) = (amountADesired, amountBDesired);
@@ -39,22 +39,32 @@ contract SpaceRouter {
         }
     }
 
-    function addLiquidity(address tokenA, address tokenB, uint amountADesired, uint amountBDesired, address to) external payable
-        returns (uint amountA, uint amountB, uint liquidity) {
+    function addLiquidity(uint spaceCoins) external payable returns (uint amountA, uint amountB, uint liquidity) {
 
         require(_spaceCoin.balanceOf(msg.sender) > 0, "NO_AVAILABLE_TOKENS");
 
-        (amountA, amountB) = _addLiquidity(tokenA, tokenB, msg.value, amountBDesired);
+        (amountA, amountB) = _addLiquidity(msg.value, spaceCoins);
 
-        // Transfer tokenB from senders account to Liquidity Pool
+        // Transfer ETH from senders account to Liquidity Pool
         (bool success, ) = address(_spacePool).call{ value: msg.value }("");
         require(success, 'ETH_TRANSFER_FAILED');
 
-        // Transfer tokenB from senders account to Liquidity Pool
-        _spaceCoin.increaseContractAllowance(msg.sender, address(_spacePool), amountB);
-        _spaceCoin.transferFrom(msg.sender, address(_spacePool), amountB);
+        // Transfer SPC from senders account to Liquidity Pool
+        _spaceCoin.increaseContractAllowance(msg.sender, address(_spacePool), spaceCoins);
+        _spaceCoin.transferFrom(msg.sender, address(_spacePool), spaceCoins);
 
-        // Pool.mint(to) -- mint LP tokens to sender address
-        uint liquiditytokens = _spacePool.mint(to);
+        // mint LP tokens to sender address
+        liquidity = _spacePool.mint(msg.sender);
     }
+
+    function removeLiquidity() external payable returns (uint amountA, uint amountB, uint liquidity) {
+
+        // Calculate ETH and SPC
+        (uint amountA, uint amountB) = _spacePool.burn(msg.sender);
+
+        // Transfer SPC from liquidity Pool to senders account
+        _spaceCoin.increaseContractAllowance(address(_spacePool), msg.sender, amountB);
+        (bool success1) = _spaceCoin.transferFrom(address(_spacePool), msg.sender, amountB);
+    }
+        
 }
