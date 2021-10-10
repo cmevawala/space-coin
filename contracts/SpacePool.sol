@@ -1,6 +1,5 @@
 // contracts/SpacePool.sol
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.7;
 
 import "hardhat/console.sol";
@@ -83,7 +82,7 @@ contract SpacePool is Ownable {
         amount0 = liquidity * balance0 / _totalSupply; // 3.33 * 3010 / 1003.33
         amount1 = liquidity * balance1 / _totalSupply; // 3.33 * 15050 / 1003.3
 
-        require(amount0 > 0 && amount1 > 0, 'UniswapV2: INSUFFICIENT_LIQUIDITY_BURNED');
+        require(amount0 > 0 && amount1 > 0, 'SpacePool: INSUFFICIENT_LIQUIDITY_BURNED');
 
         _spacePoolCoin.burn(to, liquidity);
 
@@ -94,7 +93,21 @@ contract SpacePool is Ownable {
         emit Burn(msg.sender, amount0, amount1, to);
     }
 
-    function swap() external lock {
+    function swap(uint spaceCoins, address to) external payable lock returns (uint amountOut, uint slippage) {
+        uint balance0 = address(this).balance; // 3010 ETH
+        uint balance1 = _spaceCoin.balanceOf(address(this)); // 15050 SPC
+
+        uint amountIn = msg.value;
+        if (msg.value > 0 && spaceCoins == 0) {
+            amountOut = (balance0 * balance1) / ( balance0 + amountIn );
+            slippage = balance1 - amountOut;
+        } else {
+            amountOut = (balance0 * balance1) / ( balance1 + spaceCoins );
+            slippage = balance0 - amountOut;
+
+            (bool success, ) = to.call{ value: slippage }("");
+            require(success, 'SpacePool::swapTokens ETH_TRANSFER_FROM_SPCPOOL_FAILED');
+        }
     }
 
     // force reserves to match balances
