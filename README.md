@@ -7,10 +7,10 @@
 - [X] Contribute in ICO
 - [X] Redeem on Request
 - [X] Phase Forward by Admin
-- [ ] Transfer immediatly in Open Phase
-- [ ] Pausable
-- [ ] Transfer to Treasury
-- [ ] Calculate 2% Tax during Transfer.
+- [X] Transfer immediatly in Open Phase
+- [X] Pausable
+- [X] Transfer to Treasury
+- [X] Calculate 2% Tax during Transfer.
 
 ### Unit Tests
 
