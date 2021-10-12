@@ -30,7 +30,6 @@ contract SpacePool is Ownable {
 
     uint112 private reserve0;
     uint112 private reserve1;
-    uint32  private blockTimestampLast;
 
     uint private unlocked = 1;
     modifier lock() {
@@ -127,7 +126,6 @@ contract SpacePool is Ownable {
         emit Swap(msg.sender, amountIn, spaceCoins, amountOut, amountOut, to);
     }
 
-    // force reserves to match balances
     function sync() external lock {
         _update(address(this).balance, _spaceCoin.balanceOf(address(this)));
     }

@@ -22,33 +22,10 @@ contract SpaceRouter {
         _spaceCoin = spaceCoin;
     }
 
-    function _addLiquidity(uint amountADesired, uint amountBDesired) internal view returns (uint amountA, uint amountB) {
-         // (uint reserveA, uint reserveB) = SpacePoolLibrary.getReserves(_spacePool, tokenA, tokenB);
-         (uint reserveA, uint reserveB) = _spacePool.getReserves();
-
-         if (reserveA == 0 && reserveB == 0) {
-            (amountA, amountB) = (amountADesired, amountBDesired);
-        } else {
-            // uint amountBOptimal = UniswapV2Library.quote(amountADesired, reserveA, reserveB);
-            // if (amountBOptimal <= amountBDesired) {
-            //     (amountA, amountB) = (amountADesired, amountBOptimal);
-            // } else {
-            //     uint amountAOptimal = UniswapV2Library.quote(amountBDesired, reserveB, reserveA);
-            //     assert(amountAOptimal <= amountADesired);
-            //     (amountA, amountB) = (amountAOptimal, amountBDesired);
-            // }
-        }
-    }
-
     function addLiquidity(uint spaceCoins) external payable returns (uint amountA, uint amountB, uint liquidity) {
 
         require(spaceCoins > 0 && msg.value > 0, "INSUFFICIENT_ETH_SPC_SUPPLIED");
         require(_spaceCoin.balanceOf(msg.sender) > 0, "INSUFFICIENT_BALANCE_FOR_SPC_COINS");
-
-        // Validate the liquidity when depositing for 1st time
-        // Validate the liquidity when depositing for 2st time after the trading has happened
-        // TODO: How do you know what is the current ratio in the pool - UI
-        (amountA, amountB) = _addLiquidity(msg.value, spaceCoins);
 
         // Transfer ETH from senders account to Liquidity Pool
         (bool success, ) = address(_spacePool).call{ value: msg.value }("");
