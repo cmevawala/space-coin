@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const { formatEther, parseEther, parseUnits, formatUnits } = require('ethers/lib/utils');
 
-describe('SpaceCoinICO - Withdraw - Space Pool', function () {
+describe.only('Space Pool', function () {
 
     let SpacePoolCoinContract;
     let spacePoolCoin;
@@ -9,8 +9,6 @@ describe('SpaceCoinICO - Withdraw - Space Pool', function () {
     let spaceRouter;
     let SpacePoolContract;
     let spacePool;
-    let WETHContract;
-    let weth;
     let TreasuryContract;
     let treasury;
     let SpaceCoinICOContract;
@@ -105,10 +103,10 @@ describe('SpaceCoinICO - Withdraw - Space Pool', function () {
         await spaceRouter.connect(depositors[22]).swapTokens(parseUnits("0"), overrides); // Trade 1 ETH
 
 
-        expect(formatEther(await spaceCoin.balanceOf(depositors[22].address))).to.equal('7504.946745994329311616'); // Pool: SPC
+        expect(formatEther(await spaceCoin.balanceOf(depositors[22].address))).to.equal('7504.948372462213424821'); // Pool: SPC
 
         expect(formatEther(await spacePool.getBalance())).to.equal('3010.99'); // Pool: ETH
-        expect(formatEther(await spaceCoin.balanceOf(spacePool.address))).to.equal('15045.053254005670688384'); // Pool: SPC
+        expect(formatEther(await spaceCoin.balanceOf(spacePool.address))).to.equal('15045.051627537786575179'); // Pool: SPC
     });
 
     it("should return the ETH when trading 50 SPC in SPC-ETH pool", async function() {

@@ -3,8 +3,6 @@ const { formatEther } = require('ethers/lib/utils');
 
 describe('SpaceCoin', function () {
   
-  let WETHContract;
-  let weth;
   let TreasuryContract;
   let treasury;
   let SpaceCoinICOContract;

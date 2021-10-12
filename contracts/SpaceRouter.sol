@@ -42,28 +42,31 @@ contract SpaceRouter {
 
     function addLiquidity(uint spaceCoins) external payable returns (uint amountA, uint amountB, uint liquidity) {
 
-        require(_spaceCoin.balanceOf(msg.sender) > 0, "NO_AVAILABLE_TOKENS");
+        require(spaceCoins > 0 && msg.value > 0, "INSUFFICIENT_ETH_SPC_SUPPLIED");
+        require(_spaceCoin.balanceOf(msg.sender) > 0, "INSUFFICIENT_BALANCE_FOR_SPC_COINS");
 
         // Validate the liquidity when depositing for 1st time
         // Validate the liquidity when depositing for 2st time after the trading has happened
+        // TODO: How do you know what is the current ratio in the pool - UI
         (amountA, amountB) = _addLiquidity(msg.value, spaceCoins);
 
         // Transfer ETH from senders account to Liquidity Pool
         (bool success, ) = address(_spacePool).call{ value: msg.value }("");
-        require(success, 'ETH_TRANSFER_FAILED');
+        require(success, 'ETH_TRANSFER_TO_POOL_FAILED');
 
         // Transfer SPC from senders account to Liquidity Pool
         _spaceCoin.increaseContractAllowance(msg.sender, address(_spacePool), spaceCoins);
-        _spaceCoin.transferFrom(msg.sender, address(_spacePool), spaceCoins);
+        bool success1 = _spaceCoin.transferFrom(msg.sender, address(_spacePool), spaceCoins);
+        require(success1, 'SPC_TRANSFER_TO_POOL_FAILED');
 
         // mint LP tokens to sender address
         liquidity = _spacePool.mint(msg.sender);
     }
 
-    function removeLiquidity() external payable returns (uint amountA, uint amountB, uint liquidity) {
+    function removeLiquidity() external payable returns (uint amountA, uint amountB) {
 
-        // Calculate ETH and SPC
-        (uint amountA, uint amountB) = _spacePool.burn(msg.sender);
+        // Calculate ETH and SPC for the senders LP Tokens
+        (amountA, amountB) = _spacePool.burn(msg.sender);
 
         // Transfer SPC from liquidity Pool to senders account
         _spaceCoin.increaseContractAllowance(address(_spacePool), msg.sender, amountB);
@@ -85,12 +88,14 @@ contract SpaceRouter {
         }
 
         // Calculate trade fee
-        uint tradeFee = (amountIn * TRADE_FEE) / 100;
+        uint tradeFee = (amountIn * TRADE_FEE) / 100; // TODO: Trade Fee should increase K. Mint on Pool's address
 
         // Deducted trade fee
         amountIn = amountIn - tradeFee;
 
         if (spaceCoins > 0) {
+            require(spaceCoins <= _spaceCoin.balanceOf(msg.sender), "INSUFFICIENT_BALANCE_FOR_SPC_COINS");
+
             // Transfer SPC from senders account to Liquidity Pool
             (amountOut, slippage) = _spacePool.swap(amountIn, msg.sender);
 

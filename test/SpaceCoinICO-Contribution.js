@@ -3,8 +3,6 @@ const { formatEther, parseEther, parseUnits, formatUnits } = require('ethers/lib
 
 describe('SpaceCoinICO - Contribution - Seed Phase', function () {
 
-  let WETHContract;
-  let weth;
   let TreasuryContract;
   let treasury;
   let SpaceCoinICOContract;
@@ -111,8 +109,6 @@ describe('SpaceCoinICO - Contribution - Seed Phase', function () {
 
 describe('SpaceCoinICO - Contribution - General Phase', function () {
 
-  let WETHContract;
-  let weth;
   let TreasuryContract;
   let treasury;
   let SpaceCoinICOContract;
