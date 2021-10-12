@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const { formatEther, parseEther, parseUnits, formatUnits } = require('ethers/lib/utils');
 
-describe.only('SpaceCoinICO - Withdraw - Space Pool', function () {
+describe('SpaceCoinICO - Withdraw - Space Pool', function () {
 
     let SpacePoolCoinContract;
     let spacePoolCoin;
@@ -34,10 +34,6 @@ describe.only('SpaceCoinICO - Withdraw - Space Pool', function () {
         spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
         
-
-        WETHContract = await ethers.getContractFactory('WETH');
-        weth = await WETHContract.deploy();
-
         SpacePoolCoinContract = await ethers.getContractFactory('SpacePoolCoin');
         spacePoolCoin = await SpacePoolCoinContract.deploy();
 
@@ -47,7 +43,6 @@ describe.only('SpaceCoinICO - Withdraw - Space Pool', function () {
         SpaceRouterContract = await ethers.getContractFactory('SpaceRouter');
         spaceRouter = await SpaceRouterContract.deploy(spacePool.address, spaceCoin.address);
 
-        spaceCoinICO.setWETHAddress(weth.address);
         spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
         spaceCoinICO.setSpacePoolAddress(spacePool.address);
 

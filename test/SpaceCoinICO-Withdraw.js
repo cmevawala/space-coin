@@ -18,9 +18,6 @@ describe('SpaceCoinICO - Contribution/Withdraw - Open Phase', function () {
         // Get the ContractFactory and Signers here.
         [owner, w1, w2, w3] = await ethers.getSigners();
 
-        WETHContract = await ethers.getContractFactory('WETH');
-        weth = await WETHContract.deploy();
-
         TreasuryContract = await ethers.getContractFactory('Treasury');
         treasury = await TreasuryContract.deploy();
 
@@ -30,7 +27,6 @@ describe('SpaceCoinICO - Contribution/Withdraw - Open Phase', function () {
         SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
         spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
-        // spaceCoinICO.setWETHAddress(weth.address);
         spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
         treasury.setSpaceCoinICOAddress(spaceCoinICO.address);
     });
@@ -155,12 +151,6 @@ describe('SpaceCoinICO - Withdraw - Space Pool', function () {
         // Get the ContractFactory and Signers here.
         [owner, ...w] = await ethers.getSigners();
 
-        SpacePoolContract = await ethers.getContractFactory('SpacePool');
-        spacePool = await SpacePoolContract.deploy();
-        
-        WETHContract = await ethers.getContractFactory('WETH');
-        weth = await WETHContract.deploy();
-
         TreasuryContract = await ethers.getContractFactory('Treasury');
         treasury = await TreasuryContract.deploy();
 
@@ -170,7 +160,12 @@ describe('SpaceCoinICO - Withdraw - Space Pool', function () {
         SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
         spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
-        spaceCoinICO.setWETHAddress(weth.address);
+        SpacePoolCoinContract = await ethers.getContractFactory('SpacePoolCoin');
+        spacePoolCoin = await SpacePoolCoinContract.deploy();
+
+        SpacePoolContract = await ethers.getContractFactory('SpacePool');
+        spacePool = await SpacePoolContract.deploy(spaceCoin.address, spacePoolCoin.address);
+
         spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
         spaceCoinICO.setSpacePoolAddress(spacePool.address);
         
@@ -234,7 +229,7 @@ describe('SpaceCoinICO - Withdraw - Space Pool', function () {
         await spaceCoinICO.withdraw();
         
         expect(formatEther(await spacePool.getBalance())).to.equal('5000.0'); // 5000 Pool => ETH
-        expect(formatEther(await weth.balanceOf(spacePool.address))).to.equal('5000.0'); // 5000 Pool => WETH
+        // expect(formatEther(await weth.balanceOf(spacePool.address))).to.equal('5000.0'); // 5000 Pool => WETH
         expect(formatEther(await spaceCoin.balanceOf(spacePool.address))).to.equal('25000.0'); // 25000 Pool => SPC
     });
 

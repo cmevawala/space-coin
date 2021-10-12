@@ -16,9 +16,6 @@ describe('SpaceCoin', function () {
     // Get the ContractFactory and Signers here.
     [owner, w1] = await ethers.getSigners();
 
-    WETHContract = await ethers.getContractFactory('WETH');
-    weth = await WETHContract.deploy();
-
     TreasuryContract = await ethers.getContractFactory('Treasury');
     treasury = await TreasuryContract.deploy();
 
@@ -27,8 +24,6 @@ describe('SpaceCoin', function () {
 
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
-
-    // spaceCoinICO.setWETHAddress(weth.address);
 
     // expect(formatUnits(await spaceCoinICO.getBalance())).to.equal("0.0");
     // expect(formatUnits(await w1.getBalance())).to.equal("10000.0");

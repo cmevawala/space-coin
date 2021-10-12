@@ -17,9 +17,6 @@ describe('SpaceCoinICO', function () {
     // Get the ContractFactory and Signers here.
     [owner, w1] = await ethers.getSigners();
 
-    WETHContract = await ethers.getContractFactory('WETH');
-    weth = await WETHContract.deploy();
-
     TreasuryContract = await ethers.getContractFactory('Treasury');
     treasury = await TreasuryContract.deploy();
 
@@ -29,7 +26,6 @@ describe('SpaceCoinICO', function () {
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
-    // spaceCoinICO.setWETHAddress(weth.address);
     spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
   });
 
@@ -80,9 +76,6 @@ describe('SpaceCoinICO - Change Phase', function () {
     // Get the ContractFactory and Signers here.
     [owner, w1, w2, w3, w4] = await ethers.getSigners();
 
-    WETHContract = await ethers.getContractFactory('WETH');
-    weth = await WETHContract.deploy();
-
     TreasuryContract = await ethers.getContractFactory('Treasury');
     treasury = await TreasuryContract.deploy();
 
@@ -92,7 +85,6 @@ describe('SpaceCoinICO - Change Phase', function () {
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
-    // spaceCoinICO.setWETHAddress(weth.address);
     spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
   });
 

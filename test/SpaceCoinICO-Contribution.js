@@ -18,9 +18,6 @@ describe('SpaceCoinICO - Contribution - Seed Phase', function () {
     // Get the ContractFactory and Signers here.
     [owner, w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12] = await ethers.getSigners();
 
-    WETHContract = await ethers.getContractFactory('WETH');
-    weth = await WETHContract.deploy();
-
     TreasuryContract = await ethers.getContractFactory('Treasury');
     treasury = await TreasuryContract.deploy();
 
@@ -30,7 +27,6 @@ describe('SpaceCoinICO - Contribution - Seed Phase', function () {
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
     
-    // spaceCoinICO.setWETHAddress(weth.address);
     spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
   });
 
@@ -130,9 +126,6 @@ describe('SpaceCoinICO - Contribution - General Phase', function () {
     // Get the ContractFactory and Signers here.
     [owner, w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13, g14, g15, g16] = await ethers.getSigners();
 
-    WETHContract = await ethers.getContractFactory('WETH');
-    weth = await WETHContract.deploy();
-
     TreasuryContract = await ethers.getContractFactory('Treasury');
     treasury = await TreasuryContract.deploy();
 
@@ -142,7 +135,6 @@ describe('SpaceCoinICO - Contribution - General Phase', function () {
     SpaceCoinContract = await ethers.getContractFactory('SpaceCoin');
     spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
-    // spaceCoinICO.setWETHAddress(weth.address);
     spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
   });
 

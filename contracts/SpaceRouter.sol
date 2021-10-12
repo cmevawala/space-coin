@@ -8,14 +8,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 import './SpacePool.sol';
 import './SpaceCoin.sol';
-import './SpacePoolLib.sol';
-import './TransferHelper.sol';
 
 contract SpaceRouter {
 
     uint8 private constant TRADE_FEE = 1;
     uint private constant SLIPPAGE_LIMIT = 5 ether;
-    
 
     SpacePool private _spacePool;
     SpaceCoin private _spaceCoin;
@@ -75,14 +72,6 @@ contract SpaceRouter {
     }
 
     function swapTokens(uint spaceCoins) external payable returns (uint amountOut) {
-        // Our Logic
-        // Validate either SPC or ETH should be greater than zero
-        // transfer 1 ETH from sender's account to Pool
-        // Calculate 1% of ETH and subtract 1 - 0.01 = 0.99 ETH
-        // Should 1% of trade fee added to the Constant ?
-        // Calculate SPC Out i.e. SPC = Constant / total ETH after deposits
-        // Transfer calculated SPC from the Pool the Sender Account
-
         if (spaceCoins == 0 && msg.value == 0) {
             require(false, "INVALID_TRADE");
         }

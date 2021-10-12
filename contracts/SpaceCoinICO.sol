@@ -8,7 +8,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
 import "./SpaceCoin.sol";
-import "./WrappedETH.sol";
 import "./SpacePool.sol";
 
 enum Phase {
@@ -18,8 +17,6 @@ enum Phase {
 }
 
 contract SpaceCoinICO is Ownable, Pausable {
-
-    // TODO: When Buy, calculate the amount of Tokens at the fixed exchange rate and kept it in lock
 
     /* Que: 
         What is address(0) 
@@ -40,7 +37,6 @@ contract SpaceCoinICO is Ownable, Pausable {
 
     SpaceCoin private _spaceCoin;
     SpacePool private _spacePool;
-    WETH private _weth;
     Phase private _phase;
 
     modifier isWhitelisted() {
@@ -164,22 +160,16 @@ contract SpaceCoinICO is Ownable, Pausable {
 
     // function withdraw() external payable {
     //     require(msg.sender == _treasury, "UNAUTHORIZED");
-    //     // _weth.mint(msg.sender, address(this).balance / 10 ** 18);
     //     _spaceCoin.transfer(address(_spacePool), address(this).balance * 5);
     //     // (bool successT,) = _treasury.call{ value: address(this).balance }("");
     //     (bool success,) = address(_spacePool).call{ value: address(this).balance }("");
     //     require(success, 'WITHDRAW_FAILED');
     // }
 
-    function setWETHAddress(address weth) public {
-        _weth = WETH(weth);
-    }
-
     function withdraw() external payable onlyOwner {
         // _spaceCoin.mint(address(_spacePool), (address(this).balance / 10 ** 18) * 5);
         _spaceCoin.transfer(address(_spacePool), address(this).balance * 5);
         
-        _weth.mint(address(_spacePool), address(this).balance / 10 ** 18);
         (bool success, ) = address(_spacePool).call{ value: address(this).balance }("");
         
         require(success, 'WITHDRAW_FAILED');

@@ -7,13 +7,11 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./SpaceCoinICO.sol";
 import "./SpacePool.sol";
-import "./WrappedETH.sol";
 
 
 contract Treasury is Ownable {
 
     SpaceCoinICO _ico;
-    WETH _weth;
     SpacePool _spacePool;
     
     receive() external payable {}
@@ -30,15 +28,7 @@ contract Treasury is Ownable {
     //     _spacePool = SpacePool(spacePool);
     // }
 
-    // function setWETHAddress(address weth) public {
-    //     _weth = WETH(weth);
-    // }
-
     // function withdrawFromICO() public payable {
     //     _ico.withdraw();
-    // }
-
-    // function transferWETH(address _to, uint amount) external onlyOwner {
-    //     _weth.transfer(_to, amount);
     // }
 }
