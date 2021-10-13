@@ -62,6 +62,8 @@ contract SpacePool is Ownable {
     }
     
     function mint(address to) external lock returns (uint liquidity) {
+        require(to != address(0), "MINT_ERROR");
+
         (uint112 _reserve0, uint112 _reserve1) = getReserves(); // gas savings
         _totalSupply = _spacePoolCoin.totalSupply();
 
@@ -81,6 +83,8 @@ contract SpacePool is Ownable {
     }
 
     function burn(address to) external lock returns (uint amount0, uint amount1) {
+        require(to != address(0), "BURN_ERROR");
+
         (uint112 _reserve0, uint112 _reserve1) = getReserves(); // gas savings
         
         // uint balance0 = address(this).balance; // 3010 ETH
@@ -107,6 +111,8 @@ contract SpacePool is Ownable {
     }
 
     function swap(uint spaceCoins, address to) external payable lock returns (uint amountOut, uint slippage) {
+        require(to != address(0), "SWAP_ERROR");
+
         uint balance0 = reserve0; // 3010 ETH
         uint balance1 = reserve1; // 15050 SPC
 
