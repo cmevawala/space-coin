@@ -45,6 +45,10 @@ contract SpaceRouter {
         }
     }
 
+    function quote(uint amountInA, uint amountInB) external view returns (uint amountA, uint amountB) {
+        (amountA, amountB) = _addLiquidity(amountInA, amountInB);
+    }
+
     function addLiquidity(uint spaceCoins) external payable returns (uint amountA, uint amountB, uint liquidity) {
 
         (amountA, amountB) = _addLiquidity(msg.value, spaceCoins);
