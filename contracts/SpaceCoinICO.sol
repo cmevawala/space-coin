@@ -85,13 +85,17 @@ contract SpaceCoinICO is Ownable, Pausable {
     }
 
     function setSpaceCoinAddress(SpaceCoin spaceCoin) external {
-        // Set Address only once
-        _spaceCoin = spaceCoin;
+        require(address(spaceCoin) != address(0), "INVALID_SPACE_COIN_ADDRESS");
+        if (address(_spaceCoin)  ==  address(0)) {
+            _spaceCoin = spaceCoin;
+        }
     }
 
     function setSpacePoolAddress(SpacePool spacePool) external {
-        // Set Address only once
-        _spacePool = spacePool;
+        require(address(spacePool) != address(0), "INVALID_SPACE_POOL_ADDRESS");
+        if (address(_spacePool)  ==  address(0)) {
+            _spacePool = spacePool;
+        }
     }
 
     function setGeneralPhase() external onlyOwner whenNotPaused {
@@ -124,7 +128,7 @@ contract SpaceCoinICO is Ownable, Pausable {
         _whiteListedAddress[_address] = true;
         _contributorToAmount[_address] = 0;
 
-        emit AddedToWhiteList("Address Whitelisted", msg.sender);
+        emit AddedToWhiteList("Address Whitelisted", _address);
     }
 
     function phaseRemaingCapacity() public view returns (uint) {

@@ -22,18 +22,43 @@ contract SpaceRouter {
         _spaceCoin = spaceCoin;
     }
 
+    function _quote(uint amountA, uint reserveA, uint reserveB) internal pure returns (uint amountB) {
+        require(amountA > 0, 'SpaceRouter: INSUFFICIENT_AMOUNT');
+        require(reserveA > 0 && reserveB > 0, 'SpaceRouter: INSUFFICIENT_LIQUIDITY');
+        amountB = (amountA * reserveB) / reserveA;
+    }
+
+    function _addLiquidity(uint amountADesired, uint amountBDesired) private view returns (uint amountA, uint amountB) {
+        (uint reserveA, uint reserveB) = _spacePool.getReserves();
+
+        if (reserveA == 0 && reserveB == 0) {
+            (amountA, amountB) = (amountADesired, amountBDesired);
+        } else {
+            uint amountBOptimal = _quote(amountADesired, reserveA, reserveB);
+            if (amountBOptimal <= amountBDesired) {
+                (amountA, amountB) = (amountADesired, amountBOptimal);
+            } else {
+                uint amountAOptimal = _quote(amountBDesired, reserveB, reserveA);
+                assert(amountAOptimal <= amountADesired);
+                (amountA, amountB) = (amountAOptimal, amountBDesired);
+            }
+        }
+    }
+
     function addLiquidity(uint spaceCoins) external payable returns (uint amountA, uint amountB, uint liquidity) {
+
+        (amountA, amountB) = _addLiquidity(msg.value, spaceCoins);
 
         require(spaceCoins > 0 && msg.value > 0, "INSUFFICIENT_ETH_SPC_SUPPLIED");
         require(_spaceCoin.balanceOf(msg.sender) > 0, "INSUFFICIENT_BALANCE_FOR_SPC_COINS");
 
         // Transfer ETH from senders account to Liquidity Pool
-        (bool success, ) = address(_spacePool).call{ value: msg.value }("");
+        (bool success, ) = address(_spacePool).call{ value: amountA }("");
         require(success, 'ETH_TRANSFER_TO_POOL_FAILED');
 
         // Transfer SPC from senders account to Liquidity Pool
-        _spaceCoin.increaseContractAllowance(msg.sender, address(_spacePool), spaceCoins);
-        bool success1 = _spaceCoin.transferFrom(msg.sender, address(_spacePool), spaceCoins);
+        _spaceCoin.increaseContractAllowance(msg.sender, address(_spacePool), amountB);
+        bool success1 = _spaceCoin.transferFrom(msg.sender, address(_spacePool), amountB);
         require(success1, 'SPC_TRANSFER_TO_POOL_FAILED');
 
         // mint LP tokens to sender address
