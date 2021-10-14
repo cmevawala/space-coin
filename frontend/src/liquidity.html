@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpaceCoin ICO</title>
+    <script>var parcelRequire;</script>
+
+    <link rel="stylesheet" href="./liquidity.css">
+</head>
+<body>
+    <h1>SpacePool - Mange Liquidity</h1>
+    
+    <br />
+    
+    <h3>MetaMask</h3>
+    <label>Address / Balance:</label>
+    <!-- <span id="account"></span>&nbsp;&nbsp; -->
+    <span id="balance"></span>
+
+    <br />
+
+    <h3>SPC Tokens</h3>
+    <label>Balance:</label>
+    <span id="spcbalance"></span>
+
+    <br />
+
+    <div class="manage-liquidity-container">
+        <div class="manage-liquidity-box">
+            <div class="base-token">
+                <label for="base-token">ETH</label>
+                <input type="text" value="" name="base-token" id="base-token" />
+            </div>
+            <div class="target-token">
+                <label for="target-token">SPC</label>
+                <input type="text" value="" name="target-token" id="target-token" />
+            </div>
+            <div class="connect-wallet">
+                <button id="connect-wallet">Connect To Wallet</button>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <h3>Liquidity Pool Tokens</h3>
+    <label>Balance:</label>
+    <span id="lpbalance"></span>&nbsp;&nbsp;
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="module" src="./liquidity.js"></script>
+</body>
+</html>

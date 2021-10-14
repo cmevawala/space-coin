@@ -1,19 +1,17 @@
 import 'regenerator-runtime/runtime';
 import { ethers } from 'ethers';
-import SpaceCoinJSON from '../../artifacts/contracts/SpaceCoin.sol/SpaceCoin.json';
+import SpaceCoinJSON from '../../artifacts/contracts/SpaceCoin.sol/SpaceCoin.json'
+import SpaceCoinICOJSON from '../../artifacts/contracts/SpaceCoinICO.sol/SpaceCoinICO.json';
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
 
-const spaceCoinAddr = '0x13eCEaAec0E4f44C601b0042d40c426dd7A9863d';
-const contract = new ethers.Contract(spaceCoinAddr, SpaceCoinJSON.abi, provider);
+// const spaceCoinICOAddr = '0x13eCEaAec0E4f44C601b0042d40c426dd7A9863d';
+const spaceCoinICOAddr = '0x9AaCC9e1A5b949970E763DDea64d5fdCE022f00C';
+const spaceCoinICO = new ethers.Contract(spaceCoinICOAddr, SpaceCoinICOJSON.abi, provider);
 
-const whitelistAccount = "0xB74C1750e7fC5d54eBBaeeAEE2408fA773B026fA";
-
-window.onload = function () {
-    $('#admin-section').hide();
-    $('#purchase-section').hide();
-}
+const spaceCoinAddr = '0xbc77f93cfB1f60eD44fbd75f67D7B3fB345a2535';
+const spaceCoin = new ethers.Contract(spaceCoinAddr, SpaceCoinJSON.abi, provider);
 
 // Kick things off
 go();
@@ -25,65 +23,34 @@ async function go() {
 async function connectToMetamask() {
   try {
     console.log('Signed in');
-    const owner = await contract.owner();
-
-    console.log("Contract Balance: " + ethers.utils.formatEther(await contract.getBalance()));
-    
     const address = await signer.getAddress();
     $('#account').text(address);
     $('#balance').text(ethers.utils.formatEther(await signer.getBalance()));
-    $('#tokens').text(ethers.utils.formatEther(await contract.balanceOf(address)));
+    $('#tokens').text(ethers.utils.formatEther(await spaceCoin.balanceOf(address)));
 
-    if (address === owner) { // Owner
-        $('#admin-section').show();
-        
-        $('#whitelist').click(async () => {
-            try {
-                
-                await contract.connect(signer).addWhitelisted(whitelistAccount);
-                console.log('Added to whitelist')
+    $('#redeem').click(async () => {
+        try {
+            $('#tokens').text('Transferring Tokens....');
             
-            } catch (err) {
-                console.log(err);
-            }
-        });
-
-        $('#phase').click(async () => {
-            try {
-                
-                await contract.connect(signer).setPhase(2);
-                console.log('Phase Changed - 2');
+            // const overrides = { gasLimit: 200000 };
+            // console.log(await spaceCoinICO.connect(signer).getByAddress(address));
             
-            } catch (err) {
-                console.log(err);
-            }
-        });
-        
-    } else {
-        $('#purchase-section').show();
+            // await spaceCoinICO.connect(signer).setSpaceCoinAddress(spaceCoinAddr);
 
-        $('#release').click(async () => {
+            const overrides = { gasLimit: 500000 };
+            const transactionResponse = await spaceCoinICO.connect(signer).redeem(overrides);
+            const transactionReceipt = await transactionResponse.wait();
+            console.log(transactionReceipt);
+            console.log(transactionReceipt.status);
 
-            try {
-                $('#tokens').text('Transferring Tokens....');
-                
-                // const overrides = { gasLimit: 200000 };
-                // console.log(await contract.connect(signer).getByAddress(address));
-                
-                const overrides = { gasLimit: 200000 };
-                const transactionResponse = await contract.connect(signer).tokenTransfer(overrides);
-                const transactionReceipt = await transactionResponse.wait();
-                console.log(transactionReceipt);
-                console.log(transactionReceipt.status);
+            const balance = await spaceCoinICO.balanceOf(address);
+            $('#tokens').text(ethers.utils.formatEther(balance));
+        } catch (err) {
+            console.log(err);
+            $('#tokens').text(err);
+        }
+    });
 
-                const balance = await contract.balanceOf(address);
-                $('#tokens').text(ethers.utils.formatEther(balance));
-            } catch (err) {
-                console.log(err);
-                $('#tokens').text(err);
-            }
-        });
-    }
 
     $('#puchase').click(contribute);
   } catch (err) {
@@ -96,10 +63,11 @@ async function connectToMetamask() {
 async function contribute() {
     try {
         $('#tokens').text('Transaction in Progress....');
+
+        await spaceCoinICO.connect(signer).setSpaceCoinAddress(spaceCoin.address);
     
-        const overrides = { gasLimit: 200000, value: ethers.utils.parseEther($(this).val()) };
-        // console.log(overrides);
-        const transactionResponse = await contract.connect(signer).contribute(overrides);
+        const overrides = { gasLimit: 500000, value: ethers.utils.parseEther($(this).val()) };
+        const transactionResponse = await spaceCoinICO.connect(signer).contribute(overrides);
         const transactionReceipt = await transactionResponse.wait();
         console.log(transactionReceipt);
         console.log(transactionReceipt.status);

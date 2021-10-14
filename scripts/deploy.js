@@ -16,11 +16,13 @@ async function main() {
   await treasury.deployed();
   console.log('Treasury deployed to:', treasury.address);
 
+
   const SpaceCoinICO = await hre.ethers.getContractFactory('SpaceCoinICO');
   const spaceCoinICO = await SpaceCoinICO.deploy(treasury.address);
 
   await spaceCoinICO.deployed();
   console.log('SpaceCoinICO deployed to:', spaceCoinICO.address);
+
 
   const SpaceCoin = await hre.ethers.getContractFactory('SpaceCoin');
   const spaceCoin = await SpaceCoin.deploy(spaceCoinICO.address, treasury.address);
@@ -28,19 +30,31 @@ async function main() {
   await spaceCoin.deployed();
   console.log('SpaceCoin deployed to:', spaceCoin.address);
 
+
   const SpacePoolCoin = await hre.ethers.getContractFactory('SpacePoolCoin');
   const spacePoolCoin = await SpacePoolCoin.deploy();
 
   await spacePoolCoin.deployed();
   console.log('SpacePoolCoin deployed to:', spacePoolCoin.address);
 
+
   let overrides = { gasLimit: 5000000 }
   const SpacePool = await hre.ethers.getContractFactory('SpacePool');
   const spacePool = await SpacePool.deploy(spaceCoin.address, spacePoolCoin.address, overrides);
-  // const spacePool = await SpacePool.deploy("0xda780737978A6CE02D0807620DA069A59BdFFB6e", "0x010258073B95720014A606a81Dee8B26efabEF8D", overrides);
 
   await spacePool.deployed();
   console.log('SpacePool deployed to:', spacePool.address);
+
+
+  const SpaceRouter = await hre.ethers.getContractFactory('SpaceRouter');
+  const spaceRouter = await SpaceRouter.deploy(spacePool.address, spaceCoin.address, overrides);
+
+  await spaceRouter.deployed();
+  console.log('SpaceRouter deployed to:', spaceRouter.address);
+  
+
+  spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
+  spaceCoinICO.setSpacePoolAddress(spacePool.address);
 }
 
 main()

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpaceCoin ICO</title>
+    <script>var parcelRequire;</script>
+</head>
+
+<body>
+    <h1>SpaceCoin ICO - Admin</h1>
+
+    <br />
+
+    <div id="admin-message">
+        <h2>Restricted Access!</h2>
+    </div>
+
+    <div id="container">
+
+        <label id="msg"></label>
+
+        <h3>MetaMask</h3>
+        <label>Address:</label>
+        <span id="account"></span>
+
+        <br />
+
+        <label>Balance:</label>
+        <span id="balance"></span>
+
+        <br /><br />
+
+        <h3>Space Coins</h3>
+        <label>Tokens:</label>
+        <span id="tokens"></span>
+
+
+        <br /><br />
+        <h3>Whitelist Addresses</h3>
+        <button id="whitelist">Add Account 2 to Whitelist</button>
+
+        <br /><br />
+        <h3>Change Phase</h3>
+        <label>Current Phase:</label>
+        <span id="currentPhase"></span><br /><br />
+        <button id="generalPhase">Set General Phase</button>
+        <button id="openPhase">Set Open Phase</button>
+
+        <br /><br />
+        <h3>Space Pool </h3>
+        <label>ETH:</label>
+        <span id="eth"></span><br /><br />
+        <label>SPC:</label>
+        <span id="spc"></span><br /><br />
+        <button id="withdraw">Withdraw To Pool</button>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="module" src="./admin.js"></script>
+</body>
+
+</html>
