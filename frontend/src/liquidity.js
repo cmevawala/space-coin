@@ -58,6 +58,7 @@ async function connectToMetamask() {
     $("#target-token").change(handleChange);
 
     $("#connect-wallet").click(handleConnect)
+    $("#burn").click(handleBurn);
 
   } catch (err) {
     console.log(err.data);
@@ -121,6 +122,16 @@ async function handleConnect(event) {
   console.log(transactionReceipt);
   console.log(transactionReceipt.status);
 
-  const lpTokens = formatEther(await spacePoolCoin.balanceOf(await signer.getAddress()));
-  console.log(lpTokens);
+  $('#lpbalance').text(formatEther(await spacePoolCoin.balanceOf(await signer.getAddress())));
+}
+
+async function handleBurn() {
+
+  const overrides = { gasLimit: 500000 };
+  const transactionResponse = await spaceRouterContract.connect(signer).removeLiquidity(overrides);
+  const transactionReceipt = await transactionResponse.wait();
+  console.log(transactionReceipt);
+  console.log(transactionReceipt.status);
+
+  $('#lpbalance').text(formatEther(await spacePoolCoin.balanceOf(await signer.getAddress())));
 }

@@ -10,6 +10,8 @@ import "./Math.sol";
 
 contract SpacePool is Ownable {
 
+    // TODO: Nischay Comments, Adding Trade fee to k, update balance per block
+
     event Mint(address indexed sender, uint amount0, uint amount1);
     event Burn(uint amount0, uint amount1, address indexed to);
     event Swap(
@@ -61,7 +63,7 @@ contract SpacePool is Ownable {
         _reserve1 = reserve1;
     }
     
-    function mint(address to) external lock returns (uint liquidity) {
+    function mint(address to) external lock returns (uint liquidity) { // Restricted Caller
         require(to != address(0), "MINT_ERROR");
 
         (uint112 _reserve0, uint112 _reserve1) = getReserves(); // gas savings
@@ -75,15 +77,16 @@ contract SpacePool is Ownable {
         // Calculate LP tokens for the current Liqudity
         liquidity = Math.min((amount0 * _totalSupply) / _reserve0, (amount1 * (_totalSupply)) / _reserve1); // Min(10 * 1000 / 3000 = 1000, 50 * 1000 / 15000 = 1000)
         
-        require(liquidity > 0, 'SpacePool::mint INSUFFICIENT_LIQUIDITY_MINTED');
+        require(liquidity > 0, 'INSUFFICIENT_LIQUIDITY_MINTED');
         _spacePoolCoin.mint(to, liquidity); // Mint liquidity to the Depositor
 
         _update(balance0, balance1);
         emit Mint(to, balance0, amount1);
     }
 
-    function burn(address to) external lock returns (uint amount0, uint amount1) {
+    function burn(address to) external lock returns (uint amount0, uint amount1) { // Restricted Caller
         require(to != address(0), "BURN_ERROR");
+        require(_spacePoolCoin.balanceOf(to) >= 0, "NO_TOKENS_AVAILABLE_TO_BURN");
 
         (uint112 _reserve0, uint112 _reserve1) = getReserves(); // gas savings
         
@@ -99,14 +102,14 @@ contract SpacePool is Ownable {
         amount0 = liquidity * balance0 / _totalSupply; // 3.33 * 3010 / 1003.33
         amount1 = liquidity * balance1 / _totalSupply; // 3.33 * 15050 / 1003.33
 
-        require(amount0 > 0 && amount1 > 0, 'SpacePool::burn INSUFFICIENT_LIQUIDITY_BURNED');
+        require(amount0 > 0 && amount1 > 0, 'INSUFFICIENT_LIQUIDITY_BURNED');
         _spacePoolCoin.burn(to, liquidity);
 
-        // Transfer ETH from liquidity Pool to senders account
-        (bool success, ) = to.call{ value: amount0 }("");
-        require(success, 'SpacePool::burn ETH_TRANSFER_FROM_POOL_TO_SENDER_FAILED');
+        // Transfer ETH from liquidity Pool to Router Contract
+        (bool success, ) = msg.sender.call{ value: amount0 }("");
+        require(success, 'ETH_TRANSFER_FROM_POOL_TO_ROUTER_FAILED');
 
-        _update(address(this).balance, _spaceCoin.balanceOf(address(this))); // Always updating a latest balance
+        _update(amount0, amount1); // Always updating a latest balance
         emit Burn(amount0, amount1, to);
     }
 
@@ -125,7 +128,7 @@ contract SpacePool is Ownable {
             slippage = balance0 - amountOut;
 
             (bool success, ) = to.call{ value: slippage }("");
-            require(success, 'SpacePool::swapTokens ETH_TRANSFER_FROM_SPCPOOL_FAILED');
+            require(success, 'ETH_TRANSFER_FROM_SPCPOOL_FAILED');
         }
 
         _update(balance0, balance1);

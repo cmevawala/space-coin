@@ -17,6 +17,8 @@ contract SpaceRouter {
     SpacePool private _spacePool;
     SpaceCoin private _spaceCoin;
 
+    receive() external payable {}
+
     constructor(SpacePool spacePool, SpaceCoin spaceCoin) {
         _spacePool = spacePool;
         _spaceCoin = spaceCoin;
@@ -74,10 +76,14 @@ contract SpaceRouter {
         // Calculate ETH and SPC for the senders LP Tokens
         (amountA, amountB) = _spacePool.burn(msg.sender);
 
+        // Transfer ETH from Router Contract to senders account
+        (bool success1, ) = msg.sender.call{ value: amountA }("");
+        require(success1, 'ETH_TRANSFER_FROM_POOL_TO_SENDER_FAILED');
+
         // Transfer SPC from liquidity Pool to senders account
         _spaceCoin.increaseContractAllowance(address(_spacePool), msg.sender, amountB);
-        (bool success) = _spaceCoin.transferFrom(address(_spacePool), msg.sender, amountB);
-        require(success, 'SpaceRouter::removeLiquidity SPC_TRANSFER_FAILED');
+        (bool success2) = _spaceCoin.transferFrom(address(_spacePool), msg.sender, amountB);
+        require(success2, 'SpaceRouter::removeLiquidity SPC_TRANSFER_FAILED');
     }
 
     function swapTokens(uint spaceCoins) external payable returns (uint amountOut) {

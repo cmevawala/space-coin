@@ -94,6 +94,7 @@ describe.only('Space Pool', function () {
     });
 
     it("should return the SPC when trading 1 ETH in SPC-ETH pool", async function() {
+
         overrides = { value: parseEther('10') };
         await spaceRouter.connect(depositors[21]).addLiquidity(parseUnits("50"), overrides); // ETH = 3010, SPC = 15050
 
@@ -132,4 +133,22 @@ describe.only('Space Pool', function () {
 
         await expect(spaceRouter.connect(depositors[22]).swapTokens(parseUnits("30"))).to.be.revertedWith('EXCEDDED_SLIPPAGE_LIMIT');
     });
+
+    // it("should maintain the ratio of ETH-SPC", async function() {
+    //     overrides = { value: parseEther('5') };
+
+    //     await spaceRouter.connect(depositors[22]).addLiquidity(parseUnits("26"), overrides); // ETH = 3010, SPC = 15050
+
+    //     expect(formatEther(await spaceCoin.balanceOf(spacePool.address))).to.equal('15025.0'); // Pool: SPC
+    // });
+
+    // it("should quote the between of ETH-SPC", async function() {
+    //     let values = await spaceRouter.quote(parseUnits("1"), parseUnits("6")); // actualB < desriredB
+    //     expect(formatEther(values.amountA)).to.equal('1.0');
+    //     expect(formatEther(values.amountB)).to.equal('5.0');
+
+    //     values = await spaceRouter.quote(parseUnits("1"), parseUnits("3")); // actualB > desriredB
+    //     expect(formatEther(values.amountA)).to.equal('0.6');
+    //     expect(formatEther(values.amountB)).to.equal('3.0');
+    // });
 });
