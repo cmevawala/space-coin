@@ -11,6 +11,8 @@ import './SpaceCoin.sol';
 
 contract SpaceRouter {
 
+    // TODO: Overall the entire solution needs to be controlled using RBAC e.g. OpenZepplin AccessControl
+
     uint8 private constant TRADE_FEE = 1;
     uint private constant SLIPPAGE_LIMIT = 5 ether;
 
@@ -100,7 +102,8 @@ contract SpaceRouter {
         }
 
         // Calculate trade fee
-        uint tradeFee = (amountIn * TRADE_FEE) / 100; // TODO: Trade Fee should increase K. Mint on Pool's address
+        uint tradeFee = (amountIn * TRADE_FEE) / 100;
+        _spacePool.depositTradeFee(tradeFee);
 
         // Deducted trade fee
         amountIn = amountIn - tradeFee;
@@ -111,17 +114,17 @@ contract SpaceRouter {
             // Transfer SPC from senders account to Liquidity Pool
             (amountOut, slippage) = _spacePool.swap(amountIn, msg.sender);
 
-            require(slippage > 0 && slippage <= SLIPPAGE_LIMIT, 'EXCEDDED_SLIPPAGE_LIMIT'); // Slipage should not be greater than 5
+            require(slippage > 0 && slippage <= SLIPPAGE_LIMIT, 'EXCEDDED_SLIPPAGE_LIMIT'); // SLIPPAGE <= 5
 
             _spaceCoin.increaseContractAllowance(msg.sender, address(_spacePool), spaceCoins);
             (bool success) = _spaceCoin.transferFrom(msg.sender, address(_spacePool), spaceCoins);
-            require(success, 'SpaceRouter::swapTokens SPC_TRANSFER_TO_SPCPOOL_FAILED');
+            require(success, 'SpaceRouter::swapTokens SPC_TRANSFER_TO_SPCPOOL_FAILED'); // TODO: Should you revert trade fee incase of SLIPPAGE failure
 
         } else {
             // Transfer ETH from senders account to Liquidity Pool
             (amountOut, slippage) = _spacePool.swap{ value: amountIn }(0,  msg.sender);
 
-            require(slippage > 0 && slippage <= SLIPPAGE_LIMIT, 'EXCEDDED_SLIPPAGE_LIMIT'); // Slipage should not be greater than 5
+            require(slippage > 0 && slippage <= SLIPPAGE_LIMIT, 'EXCEDDED_SLIPPAGE_LIMIT'); // SLIPPAGE <= 5
 
             _spaceCoin.increaseContractAllowance(address(_spacePool), msg.sender, slippage);
             (bool success) = _spaceCoin.transferFrom(address(_spacePool), msg.sender, slippage);

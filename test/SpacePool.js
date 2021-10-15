@@ -125,7 +125,7 @@ describe.only('Space Pool', function () {
         expect(formatEther(await spacePool.getBalance())).to.equal('3006.045202988758974903'); // Pool: ETH
     });
 
-    it("should fail with invalid trade when nether ETH nor SPC is passed", async function() {
+    it("should fail with invalid trade when nether ETH nor SPC is supplied", async function() {
         await expect(spaceRouter.connect(depositors[22]).swapTokens(0)).to.be.revertedWith('INVALID_TRADE');
     });
 

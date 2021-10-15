@@ -10,8 +10,6 @@ import "./Math.sol";
 
 contract SpacePool is Ownable {
 
-    // TODO: Nischay Comments, Adding Trade fee to k, update balance per block
-
     event Mint(address indexed sender, uint amount0, uint amount1);
     event Burn(uint amount0, uint amount1, address indexed to);
     event Swap(
@@ -28,10 +26,13 @@ contract SpacePool is Ownable {
 
     SpaceCoin public _spaceCoin;
     SpacePoolCoin public _spacePoolCoin;
-    uint _totalSupply;
+    
+    uint private _totalSupply;
+    uint private _tradeFees;
 
     uint112 private reserve0;
     uint112 private reserve1;
+    uint32  private blockTimestampLast;
 
     uint private unlocked = 1;
     modifier lock() {
@@ -63,6 +64,11 @@ contract SpacePool is Ownable {
         return address(this).balance;
     }
 
+    function depositTradeFee(uint tradeFee) public returns (bool)  {
+        _tradeFees += tradeFee;
+        return true;
+    }
+
     function getReserves() public view returns (uint112 _reserve0, uint112 _reserve1) {
         _reserve0 = reserve0;
         _reserve1 = reserve1;
@@ -80,7 +86,7 @@ contract SpacePool is Ownable {
         uint amount1 = balance1 - reserve1;
 
         // Calculate LP tokens for the current Liqudity
-        liquidity = Math.min((amount0 * _totalSupply) / _reserve0, (amount1 * (_totalSupply)) / _reserve1); // Min(10 * 1000 / 3000 = 1000, 50 * 1000 / 15000 = 1000)
+        liquidity = Math.min((amount0 * _totalSupply) / _reserve0, (amount1 * _totalSupply) / _reserve1); // Min(10 * 1000 / 3000 = 1000, 50 * 1000 / 15000 = 1000)
         
         require(liquidity > 0, 'INSUFFICIENT_LIQUIDITY_MINTED');
         _spacePoolCoin.mint(to, liquidity); // Mint liquidity to the Depositor
@@ -126,10 +132,10 @@ contract SpacePool is Ownable {
 
         uint amountIn = msg.value;
         if (msg.value > 0 && spaceCoins == 0) {
-            amountOut = (balance0 * balance1) / ( balance0 + amountIn ); // SPC = K / 3010 + 1 ETH
+            amountOut = ((balance0 * balance1) + _tradeFees) / ( balance0 + amountIn ); // SPC = (K + FeesCollected) / 3010 + 1 ETH
             slippage = balance1 - amountOut;
         } else {
-            amountOut = (balance0 * balance1) / ( balance1 + spaceCoins ); // ETH = K / 15050 + 50 SPC
+            amountOut = ((balance0 * balance1) + _tradeFees) / ( balance1 + spaceCoins ); // ETH = (K + FeesCollected) / 15050 + 50 SPC
             slippage = balance0 - amountOut;
 
             (bool success, ) = to.call{ value: slippage }("");
@@ -145,9 +151,15 @@ contract SpacePool is Ownable {
     }
 
     function _update(uint balance0, uint balance1) private {
-        reserve0 = uint112(balance0);
-        reserve1 = uint112(balance1);
+        uint32 blockTimestamp = uint32(block.timestamp % 2**32);
+        uint32 timeElapsed = blockTimestamp - blockTimestampLast;
 
+        if (timeElapsed > 0) {
+            reserve0 = uint112(balance0);
+            reserve1 = uint112(balance1);
+        }
+
+        blockTimestampLast = blockTimestamp;
         emit Sync(reserve0, reserve1);
     }
 }
