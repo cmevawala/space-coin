@@ -42,14 +42,19 @@ contract SpacePool is Ownable {
     }
 
     // called once by the factory at time of deployment
-    constructor (SpaceCoin spaceCoin, SpacePoolCoin spacePoolCoin) {
+    constructor (SpaceCoin spaceCoin) {
         _spaceCoin = spaceCoin;
+    }
+
+    function setSpacePoolCoinAddress(SpacePoolCoin spacePoolCoin) external onlyOwner() returns (bool) {
         _spacePoolCoin = spacePoolCoin;
 
         _totalSupply = _spacePoolCoin.totalSupply();
         if (_totalSupply == 0) {
             _spacePoolCoin.mint(address(this), MINIMUM_LIQUIDITY * 10 ** 18); // permanently lock the first MINIMUM_LIQUIDITY
         }
+
+        return true;
     }
 
     receive() external payable {}

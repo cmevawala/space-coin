@@ -32,17 +32,19 @@ describe.only('Space Pool', function () {
         spaceCoin = await SpaceCoinContract.deploy(spaceCoinICO.address, treasury.address);
 
         
-        SpacePoolCoinContract = await ethers.getContractFactory('SpacePoolCoin');
-        spacePoolCoin = await SpacePoolCoinContract.deploy();
-
         SpacePoolContract = await ethers.getContractFactory('SpacePool');
-        spacePool = await SpacePoolContract.deploy(spaceCoin.address, spacePoolCoin.address);
+        spacePool = await SpacePoolContract.deploy(spaceCoin.address);
+
+        SpacePoolCoinContract = await ethers.getContractFactory('SpacePoolCoin');
+        spacePoolCoin = await SpacePoolCoinContract.deploy(spacePool.address);
 
         SpaceRouterContract = await ethers.getContractFactory('SpaceRouter');
         spaceRouter = await SpaceRouterContract.deploy(spacePool.address, spaceCoin.address);
 
         spaceCoinICO.setSpaceCoinAddress(spaceCoin.address);
         spaceCoinICO.setSpacePoolAddress(spacePool.address);
+
+        spacePool.setSpacePoolCoinAddress(spacePoolCoin.address);
 
 
         await spaceCoinICO.addWhitelisted(depositors[21].address);

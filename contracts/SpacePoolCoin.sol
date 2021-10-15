@@ -1,5 +1,5 @@
 
-// contracts/ADLP.sol
+// contracts/SPCLT.sol
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.7;
@@ -10,14 +10,23 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract SpacePoolCoin is ERC20, Ownable {
 
-    constructor() ERC20("SpacePool Coin", "SPCLT") {}
+    address _spacePool;
 
-    function mint(address account, uint256 amount) external returns (bool) {
+    modifier onlySpacePool() {
+        require(msg.sender == _spacePool, "SPCLT: Restricted Access");
+        _;
+    }
+
+    constructor(address spacePool) ERC20("SpacePool Coin", "SPCLT")  {
+        _spacePool = spacePool;
+    }
+
+    function mint(address account, uint256 amount) onlySpacePool() external returns (bool) {
         _mint(account, amount);
         return true;
     }
 
-    function burn(address account, uint256 amount) external returns (bool) {
+    function burn(address account, uint256 amount) onlySpacePool() external returns (bool) {
         _burn(account, amount);
         return true;
     }
