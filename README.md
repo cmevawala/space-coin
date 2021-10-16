@@ -21,6 +21,7 @@
 
 ### Files
 - SpacePool.sol
+- SpacePoolCoin.sol
 - SpaceRouter.sol
 
 ### Completed Features
