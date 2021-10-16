@@ -17,7 +17,9 @@
 <img width="922" alt="Screenshot 2021-10-01 at 9 09 05 PM" src="https://user-images.githubusercontent.com/3982352/135648731-04cc22f9-e3d8-479e-bdbf-bb30e356dfa4.png">
 
 
-### Completed Features - Liquidity Pool
+# Basic Sample Hardhat Project - Liquidity Pool
+
+### Completed Features
 
 - [X] Extending ICO Contract to Withdraw to Pool
 - [X] Add liquidity to the Pool
