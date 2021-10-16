@@ -31,6 +31,7 @@
 - [X] Remove liquidity to the Pool
 - [X] Trade ETH-SPC
 - [X] Manage LP Tokens
+- [X] Deployed Contract on TestNet
 - [X] Develop a FrontEnd
 
 <img width="700" alt="Screenshot 2021-10-16 at 8 11 53 AM" src="https://user-images.githubusercontent.com/3982352/137570551-b0106498-b89d-4897-a43f-f5781f3d37b0.png">
