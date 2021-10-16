@@ -15,3 +15,15 @@
 ### Unit Tests
 
 <img width="922" alt="Screenshot 2021-10-01 at 9 09 05 PM" src="https://user-images.githubusercontent.com/3982352/135648731-04cc22f9-e3d8-479e-bdbf-bb30e356dfa4.png">
+
+
+### Completed Features - Liquidity Pool
+
+- [X] Extending ICO Contract to Withdraw to Pool
+- [X] Add liquidity to the Pool
+- [X] Remove liquidity to the Pool
+- [X] Trade ETH-SPC
+- [X] Manage LP Tokens
+- [X] Develop a FrontEnd
+
+<img width="700" alt="Screenshot 2021-10-16 at 8 11 53 AM" src="https://user-images.githubusercontent.com/3982352/137570551-b0106498-b89d-4897-a43f-f5781f3d37b0.png">
