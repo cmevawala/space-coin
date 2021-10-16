@@ -19,6 +19,10 @@
 
 # Basic Sample Hardhat Project - Liquidity Pool
 
+### Files
+- SpacePool.sol
+- SpaceRouter.sol
+
 ### Completed Features
 
 - [X] Extending ICO Contract to Withdraw to Pool
